@@ -1,8 +1,16 @@
+# Build files
+*.apk
+*.ap_
+*.idsig
+*.keystore
+*.jks
+*.p12
+
+# Local configuration
+local.properties
 .gradle/
 build/
-app/build/
-local.properties
-.idea/
-*.iml
-.DS_Store
-*.jks
+captures/
+
+# Secrets
+keystore_base64.txt
