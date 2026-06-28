@@ -19,11 +19,29 @@ jobs:
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
     - name: Build with Gradle
       run: ./gradlew assembleRelease
 
-    - name: Upload APK
+    # নতুন স্টেপ ১: সিক্রেট থেকে চাবিটা উদ্ধার করা
+    - name: Decode Keystore
+      run: echo "${{ secrets.KEYSTORE_BASE64 }}" | tr -d '\r\n ' | base64 --decode > sam_key.jks
+
+    # নতুন স্টেপ ২: আনসাইনড এপিকে-টাকে সাইন করা
+    - name: Sign APK
+      run: |
+        apksigner sign --ks sam_key.jks \
+          --ks-key-alias "${{ secrets.KEY_ALIAS }}" \
+          --ks-pass "pass:${{ secrets.KEYSTORE_PASSWORD }}" \
+          --key-pass "pass:${{ secrets.KEYSTORE_PASSWORD }}" \
+          app/build/outputs/apk/release/app-release-unsigned.apk
+
+    # নতুন স্টেপ ৩: সিকিউরিটির জন্য চাবিটা ডিলিট করে দেওয়া
+    - name: Cleanup Keystore
+      run: rm -f sam_key.jks
+
+    - name: Upload Signed APK
       uses: actions/upload-artifact@v4
       with:
-        name: release-apk
+        name: Elite-Memo-Pro-Signed
         path: app/build/outputs/apk/release/*.apk
