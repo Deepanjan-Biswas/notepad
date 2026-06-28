@@ -28,9 +28,11 @@ jobs:
       run: echo "${{ secrets.KEYSTORE_BASE64 }}" | tr -d '\r\n ' | base64 --decode > sam_key.jks
 
     # নতুন স্টেপ ২: আনসাইনড এপিকে-টাকে সাইন করা
+        # নতুন ঠিক করা স্টেপ ২: আনসাইনড এপিকে-টাকে সাইন করা
     - name: Sign APK
       run: |
-        apksigner sign --ks sam_key.jks \
+        BUILD_TOOLS=$(ls -d $ANDROID_HOME/build-tools/* | tail -1)
+        $BUILD_TOOLS/apksigner sign --ks sam_key.jks \
           --ks-key-alias "${{ secrets.KEY_ALIAS }}" \
           --ks-pass "pass:${{ secrets.KEYSTORE_PASSWORD }}" \
           --key-pass "pass:${{ secrets.KEYSTORE_PASSWORD }}" \
